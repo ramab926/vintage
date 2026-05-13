@@ -1011,22 +1011,20 @@ def parse_cc_string(cc_string):
 async def process_card_async(cc, mes, ano, cvv, site_url, variant_id=None, proxy_str=None):
     return await process_card(cc, mes, ano, cvv, site_url, variant_id, proxy_str)
 
-from flask import Flask
-import os
-
 app = Flask(__name__)
 
-@app.route("/")
-def home():
-    return "API Running!"
-
-@app.route("/ping")
-def ping():
-    return {"status": "ok"}
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+@app.route('/shopify', methods=['GET'])
+def shopify_checker():
+    try:
+        site = request.args.get('site')
+        cc_string = request.args.get('cc')
+        proxy_str = request.args.get('proxy')
+        
+        if not site:
+            return jsonify({
+                "error": "Missing 'site' parameter",
+                "status": False
+            }), 400
         
         if not cc_string:
             return jsonify({
@@ -1080,8 +1078,5 @@ if __name__ == "__main__":
             "cc": request.args.get('cc', '')
         }), 500
 
-import os
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=False)
